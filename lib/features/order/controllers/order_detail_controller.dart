@@ -104,32 +104,46 @@ class OrderDetailController extends GetxController {
     super.onReady();
     _loading.value = true;
     await loadOrderDetail(order.purchaseOrderId);
+    await loadInputDetail(order.purchaseOrderId);
     _loading.value = false;
   }
 
 
-  Future loadInputDetail(int index, int orderID) async {
-    final getInputDetail = await _inputAPI.getInputDetailByID(orderID);
+  Future loadInputDetail(int orderID) async {
+    final getInputDetail = await _inputAPI.
+        getInputDetailByID(orderID);
 
-    if(getInputDetail['ok']) {
-      if(getInputDetail['result'].length != 0) {
-        _inputDetailList.clear();
-        _inputDetailList.addAll(getInputDetail['result']);
+    for(int x=0; x<_orderDetailList.length; x++) {
+      OrderDetail orderDetail = _orderDetailList[x];
+      orderDetail.commodityListSelected = <Commodity>[];
+      _commoditySelectedList = <Commodity>[].obs;
 
-        for(int i=0; i<_inputDetailList.length; i++) {
-          InputDetail inputDetail = _inputDetailList[i];
+      if(getInputDetail['ok']) {
+        if(getInputDetail['result'].length != 0) {
+          _inputDetailList.clear();
+          _inputDetailList.addAll(getInputDetail['result']);
 
-          Commodity commodity = new Commodity();
-          commodity.commodityId = inputDetail.commodityId;
-          commodity.commodityName = inputDetail.commodityName;
-          commodity.storeId = inputDetail.storeId;
-          commodity.storeName = inputDetail.storeName;
-          commodity.stock = inputDetail.quantity;
+          for(int i=0; i<_inputDetailList.length; i++) {
+            InputDetail inputDetail = _inputDetailList[i];
 
-          _orderDetailList[index].commodityListSelected.add(commodity);
-        }        
+            Commodity commodity = new Commodity();
+            commodity.commodityId = inputDetail.commodityId;
+            commodity.commodityName = inputDetail.commodityName;
+            commodity.storeId = inputDetail.storeId;
+            commodity.storeName = inputDetail.storeName;
+            commodity.stock = inputDetail.quantity;
+
+            var commodityName1 = commodity.commodityName.split(" ")[0];
+            var commodityName2 = orderDetail.commodityName.split(" ")[0];
+
+            if(commodityName1 == commodityName2) {
+              orderDetail.commodityListSelected.add(commodity);
+              commoditySelectedList.add(commodity);
+            }                      
+          }     
+        }
       }
-    }    
+    }   
   }
 
 
@@ -160,7 +174,21 @@ class OrderDetailController extends GetxController {
   Future createInputDetail(int orderID, int commodityID, int storeID, 
   double quantity) async {    
 
-    await _inputAPI.createInputDetail(orderID, commodityID, storeID, quantity);
+    final createInputDetail = await _inputAPI.createInputDetail(
+      orderID, storeID, commodityID, quantity
+    );
+
+    if(createInputDetail['ok']) {
+      return {
+        'ok': true, 
+        'message': 'Se registró correctamente en la base de datos'
+      };
+    } else {
+      return {
+        'ok': false, 
+        'message': createInputDetail['message']
+      };
+    }
   }
 
 
@@ -195,17 +223,46 @@ class OrderDetailController extends GetxController {
     }
   }
 
+
   void editValue(double value) {
     _addValue.value = value;
   } 
 
-  void deleteCommodityOrderDetail(int indexOriginal, int indexConvert) {
+
+  Future deleteCommodityOrderDetail(int indexOriginal, int indexConvert) async {
     _loading.value = true;
-    print(_orderDetailList[indexOriginal].commodityListSelected[indexConvert].commodityName);
-    _orderDetailList[indexOriginal].commodityListSelected.removeAt(indexConvert);
-    _commoditySelectedList.removeAt(indexConvert);
-    _addValue.value = 1.0;
-    _loading.value = false; 
+    OrderDetail orderDetail = _orderDetailList[indexOriginal];
+
+    final deleteInput = await _inputAPI.deleteInputDetail(
+      orderDetail.purchaseOrderId, 
+      orderDetail.commodityListSelected[indexConvert].commodityId, 
+      orderDetail.commodityListSelected[indexConvert].storeId
+    );
+
+    if(deleteInput['ok']) {
+      _commoditySelectedList.clear();
+      _commoditySelectedList.addAll(orderDetail.commodityListSelected);
+      
+      orderDetail.commodityListSelected.removeAt(indexConvert);
+      _commoditySelectedList.removeAt(indexConvert);
+
+      _addValue.value = 1.0;
+      _loading.value = false; 
+
+      return {
+        'ok': true, 
+        'message': 'Se eliminó correctamente en la base de datos'
+      };
+    }else {
+      _addValue.value = 1.0;
+      _loading.value = false; 
+
+      return {
+        'ok': true, 
+        'message': deleteInput['message']
+      };
+    }
+  
   }
 
 

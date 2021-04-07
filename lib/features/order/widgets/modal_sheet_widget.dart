@@ -1,5 +1,7 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:input_store_app/features/order/controllers/order_detail_error_controller.dart';
 import 'package:input_store_app/features/order/models/order_detail/order_detail.dart';
 import 'package:input_store_app/features/order/controllers/order_detail_controller.dart';
 
@@ -15,6 +17,8 @@ class ModalSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final OrderDetailController _ = Get.find();
+    final OrderDetailErrorController orderErrorController = Get.find();
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     TextEditingController textController = new TextEditingController();
@@ -120,12 +124,27 @@ class ModalSheetWidget extends StatelessWidget {
               onPressed: () async {
                 _.addCommodity(index);
 
-                await _.createInputDetail(
-                  orderDetail.purchaseOrderId, 
+                final createInputDetail = await _.createInputDetail(
+                  orderDetail.purchaseOrderId,
                   _.commoditySelected.storeId,
                   _.commoditySelected.commodityId,
-                  _.addValue
+                  _.commoditySelected.stock
                 );
+
+                if(createInputDetail['ok']) {
+                  orderErrorController.icon = FontAwesomeIcons.checkCircle;
+                  orderErrorController.iconColor = Colors.green;
+                  orderErrorController.title = 'Éxito';
+                }else {
+                  orderErrorController.icon = FontAwesomeIcons.exclamationCircle;
+                  orderErrorController.iconColor = Colors.red;
+                  orderErrorController.title = 'Error';
+                }
+
+                
+                orderErrorController.description = createInputDetail['message'];
+                orderErrorController.isError = true;
+
                 Navigator.of(context).pop();                
               }
             )
@@ -143,7 +162,7 @@ class ModalSheetWidget extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            description, 
+            description,
             style: TextStyle(fontSize: 16)
           ),
                 

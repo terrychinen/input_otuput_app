@@ -103,7 +103,7 @@ class InputAPI {
   int storeID, double quantity) async {
     
     try {
-      final url = '${ApiConfig.apiUrl}/input/phone/create';
+      final url = '${ApiConfig.apiUrl}/input/phone/create/detail';
 
       final response = await http.post(
           url,
@@ -111,7 +111,7 @@ class InputAPI {
             'purchase_order_id': orderID.toString(),
             'store_id': storeID.toString(),
             'commodity_id': commodityID.toString(),
-            'quantity': quantity
+            'quantity': quantity.toString()
           }
       ) .timeout(Duration(seconds: 10));
 
@@ -194,7 +194,36 @@ class InputAPI {
   }
   
 
+  Future<Map<String, dynamic>> deleteInputDetail(int orderID, int commodityID, 
+  int storeID) async {
+    
+    try {
+      final url = '${ApiConfig.apiUrl}/input/phone/delete/detail';
 
+      final response = await http.post(
+          url,
+          body: {
+            'order_id': orderID.toString(),
+            'store_id': storeID.toString(),
+            'commodity_id': commodityID.toString()
+          }
+      ) .timeout(Duration(seconds: 10));
+
+      final parseResponse = jsonDecode(response.body);
+      final message = parseResponse['message'];
+      if(response.statusCode == 200){
+        return {'ok': true, 'message': message.toString()};
+      }
+      return {'ok': false, 'message': message.toString()};
+    }on PlatformException catch(e) {
+      return {'ok': false, 'message': e.toString()};
+    } on TimeoutException catch(_){
+      return {
+        'ok': false, 
+        'message': 'No se ha establecido la conexión con el servidor'
+      };
+    }
+  }
 
 
   String parseDate(String dateString) {
