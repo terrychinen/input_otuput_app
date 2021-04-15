@@ -9,9 +9,12 @@ class Input {
   String employeeName;
   int providerId;
   String providerName;
-  String inputDate;
+  String inputDate;  
   String note;
   int state;
+  String orderDate;
+  String receiveDate;
+  double totalPrice;
 
   Input({
     this.purchaseOrderId,
@@ -21,7 +24,10 @@ class Input {
     this.providerName,
     this.inputDate,
     this.note,
-    this.state
+    this.state,
+    this.orderDate,
+    this.receiveDate,
+    this.totalPrice
   });
 
   factory Input.fromJson(Map<String, dynamic> json) => _$InputFromJson(json);

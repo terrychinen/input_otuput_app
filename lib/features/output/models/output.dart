@@ -8,7 +8,9 @@ class Output {
   int environmentId;
   String environmentName;
   int commodityId;
-  String commodityName; 
+  String commodityName;
+  int storeId;
+  String storeName;
   double quantity;
   int employeeGivesId;
   String employeeGivesName;
@@ -24,6 +26,8 @@ class Output {
     this.environmentName,
     this.commodityId,
     this.commodityName,
+    this.storeId,
+    this.storeName,
     this.quantity,
     this.employeeGivesId,
     this.employeeGivesName,
@@ -38,19 +42,3 @@ class Output {
   Map<String, dynamic> toJson() => _$OutputToJson(this);
 
 }
-
-
-/*
-output_id: number;
-    store_id: number;
-    commodity_id: number;
-    environment_id: number;
-    quantity: number;
-    employee_gives: number;
-    employee_receives: number;
-    date_output: string;
-    notes: string;
-    state: number;
-
-
-*/

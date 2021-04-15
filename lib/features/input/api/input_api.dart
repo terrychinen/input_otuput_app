@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:input_store_app/features/order/models/order_detail/order_detail.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +8,8 @@ import 'package:input_store_app/features/input/models/input/input.dart';
 import 'package:input_store_app/features/input/models/inputDetail/input_detail.dart';
 
 class InputAPI {
-   Future<Map<String, dynamic>> getInputs(String inputDate) async {
+
+  Future<Map<String, dynamic>> getInputs(String inputDate) async {
     try {
       final url = '${ApiConfig.apiUrl}/input/phone/order/search?input_date=$inputDate';
 
@@ -18,15 +18,15 @@ class InputAPI {
       final parseResponse = jsonDecode(response.body);
       final message = parseResponse['message'];
 
-      print(response.body);
-
       if(response.statusCode == 200){
         final inputResponse = parseResponse['result'] as List;
         List<Input> inputList = List<Input>.from(inputResponse.map((i) => Input.fromJson(i)));
 
         for(int i=0; i<inputList.length; i++) {
           Input input = inputList[i];
-          input.inputDate = parseDate(input.inputDate);                      
+          input.inputDate = parseDate(input.inputDate);
+          input.orderDate = parseDate(input.orderDate);
+          input.receiveDate = parseDate(input.receiveDate);
         }
 
         return {'ok': true, 'result': inputList};
@@ -38,6 +38,7 @@ class InputAPI {
       return {'ok': false, 'message': 'No se ha establecido la conexión con el servidor'};  
     }
   }
+
 
 
   Future<Map<String, dynamic>> getInput(int orderID) async {
@@ -66,8 +67,9 @@ class InputAPI {
   }
 
 
+
   Future<Map<String, dynamic>> createInput(int orderID, 
-    int employeeID, String inputDate) async {
+  int employeeID, String inputDate) async {
     try {
       final url = '${ApiConfig.apiUrl}/input/phone/create';  
 
@@ -98,6 +100,39 @@ class InputAPI {
     }
   }
  
+
+
+  Future<Map<String, dynamic>> updateInput(int orderID, String inputDate, String note) async {
+    
+    try {
+      final url = '${ApiConfig.apiUrl}/input';
+
+      final response = await http.put(
+          url,
+          body: {
+            'order_id': orderID.toString(),
+            'notes': note == null || note == '' ? '' : note,
+            'input_date': inputDate
+          }
+      ) .timeout(Duration(seconds: 10));
+
+      final parseResponse = jsonDecode(response.body);
+      final message = parseResponse['message'];
+      if(response.statusCode == 200){
+        return {'ok': true, 'message': message.toString()};
+      }
+      return {'ok': false, 'message': message.toString()};
+    }on PlatformException catch(e) {
+      return {'ok': false, 'message': e.toString()};
+    } on TimeoutException catch(_){
+      return {
+        'ok': false, 
+        'message': 'No se ha establecido la conexión con el servidor'
+      };
+    }
+  }
+
+
 
   Future<Map<String, dynamic>> createInputDetail(int orderID, int commodityID, 
   int storeID, double quantity) async {
@@ -132,6 +167,7 @@ class InputAPI {
   }
 
 
+
   Future<Map<String, dynamic>> getInputDetailByDate(String inputDate) async {
     try {
       final url = '${ApiConfig.apiUrl}/input/phone/detail/search/?input_date=$inputDate';
@@ -161,6 +197,7 @@ class InputAPI {
       return {'ok': false, 'message': 'No se ha establecido la conexión con el servidor'};  
     }
   }
+
 
 
   Future<Map<String, dynamic>> getInputDetailByID(int orderID) async {
@@ -194,6 +231,7 @@ class InputAPI {
   }
   
 
+
   Future<Map<String, dynamic>> deleteInputDetail(int orderID, int commodityID, 
   int storeID) async {
     
@@ -224,6 +262,42 @@ class InputAPI {
       };
     }
   }
+
+
+
+  Future<Map<String, dynamic>> updateInputDetail(int orderID, int commodityID, 
+  int storeID, double quantity) async {
+    
+    try {
+      final url = '${ApiConfig.apiUrl}/input/phone/create';
+
+      final response = await http.put(
+          url,
+          body: {
+            'order_id': orderID.toString(),
+            'store_id': storeID.toString(),
+            'commodity_id': commodityID.toString(),
+            'quantity': quantity.toString()
+          }
+      ) .timeout(Duration(seconds: 10));
+
+      final parseResponse = jsonDecode(response.body);
+      final message = parseResponse['message'];
+      if(response.statusCode == 200){
+        return {'ok': true, 'message': message.toString()};
+      }
+      return {'ok': false, 'message': message.toString()};
+    }on PlatformException catch(e) {
+      return {'ok': false, 'message': e.toString()};
+    } on TimeoutException catch(_){
+      return {
+        'ok': false, 
+        'message': 'No se ha establecido la conexión con el servidor'
+      };
+    }
+  }
+
+
 
 
   String parseDate(String dateString) {

@@ -2,23 +2,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:input_store_app/features/order/controllers/edit_order_detail_controller.dart';
 import 'package:input_store_app/features/order/controllers/order_detail_error_controller.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:input_store_app/features/commodity/models/commodity.dart';
-import 'package:input_store_app/features/order/controllers/order_detail_controller.dart';
 
-class SubTitleCommodityListWidget extends StatelessWidget {
+class EditSubTitleCommodityListWidget extends StatelessWidget {
   @required final int index;
   @required final List<Commodity> commodityList;
 
-  SubTitleCommodityListWidget({
+  EditSubTitleCommodityListWidget({
     this.index,
     this.commodityList
   });
 
   @override
   Widget build(BuildContext context) {
-    final OrderDetailController _ = Get.find();
+    final EditOrderDetailController _ = Get.find();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,8 +46,6 @@ class SubTitleCommodityListWidget extends StatelessWidget {
                   SizedBox(width: 10),
 
                   textWidget('X${commodity.stock}', 2, true),
-
-                  SizedBox(height: 5),
 
                   ElevatedButton(
                     child: Icon(Icons.edit),
@@ -108,7 +106,7 @@ class _ModalSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final OrderDetailErrorController orderErrorController = Get.find();
-    final OrderDetailController _ = Get.find();
+    final EditOrderDetailController _ = Get.find();
     final screenHeight = MediaQuery.of(context).size.height;
     final textController = new TextEditingController();
 
@@ -173,6 +171,13 @@ class _ModalSheetWidget extends StatelessWidget {
                     child: Text('Modificar', style: TextStyle(color: Colors.black)),
                     onPressed: () async {
                       await _.editCommodity(indexOriginal, indexConvert);
+
+                      orderErrorController.icon = FontAwesomeIcons.checkCircle;
+                      orderErrorController.iconColor = Colors.green;
+                      orderErrorController.title = 'Éxito';
+                      orderErrorController.description = 'Se actualizó correctamente';
+                      orderErrorController.isError = true;
+
                       Navigator.of(context).pop();
                     }
                   ),
@@ -256,7 +261,7 @@ class _QuantityWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final OrderDetailController _ = Get.find();
+    final EditOrderDetailController _ = Get.find();
     final screenWidth = MediaQuery.of(context).size.width;        
 
     return Container(
@@ -305,7 +310,7 @@ class _QuantityWidget extends StatelessWidget {
 
   Widget addOrMinusButton(String description, double value, Color color,
   TextEditingController textController) {
-    OrderDetailController _ = Get.find();
+    EditOrderDetailController _ = Get.find();
 
     return Container(
       width: 50,

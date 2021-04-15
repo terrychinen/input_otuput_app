@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:input_store_app/user_storage.dart';
 import 'package:input_store_app/features/order/models/order/order.dart';
 import 'package:input_store_app/features/order/pages/order_detail_page.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:input_store_app/features/input/controllers/input_controller.dart';
-import 'package:input_store_app/user_storage.dart';
 
 class OrderListwidget extends StatelessWidget {
   @required final List<Order> orderList;
@@ -53,11 +53,11 @@ class OrderListwidget extends StatelessWidget {
                 );
 
                 Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => OrderDetailPage(check: 0, order: order)
+                  builder: (_) => OrderDetailPage(order: order)
                 ));
               }else {
                 Navigator.push(context, MaterialPageRoute(
-                builder: (_) => OrderDetailPage(check: 1, order: order)
+                builder: (_) => OrderDetailPage(order: order)
               ));
               }
             }
@@ -70,19 +70,19 @@ class OrderListwidget extends StatelessWidget {
     );
   }
 
-   Widget textWidget(String text1, String text2) {
+  Widget textWidget(String text1, String text2) {
     return Row(
       children: [
-         Text(text1),
-         Expanded(
-           child: Text(
-             text2, 
-             style: TextStyle(
-               color: Colors.black, 
-               fontWeight: FontWeight.bold
-              )
+        Text(text1),
+        Expanded(
+          child: Text(
+            text2, 
+            style: TextStyle(
+              color: Colors.black, 
+              fontWeight: FontWeight.bold
             )
           )
+        )
       ],
     );
   }

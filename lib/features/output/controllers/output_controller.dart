@@ -22,6 +22,7 @@ class OutputController extends GetxController {
 
   RxBool _loading;
   bool get loading => _loading.value;
+  set loading(bool value) => _loading.value = value;
   
   Rx<DateTime> _datePicked;
   DateTime get datePicked => _datePicked.value;
@@ -113,6 +114,7 @@ class OutputController extends GetxController {
       }
     }
   }
+
 
   Future checkIfStoreAndCommodityExist(int storeID, int commodityID) async {
     final checkStoreCommodity = await _commodityAPI

@@ -7,12 +7,10 @@ import 'package:input_store_app/features/order/api/order_detail_api.dart';
 import 'package:input_store_app/features/commodity/api/commodity_api.dart';
 import 'package:input_store_app/features/order/models/order_detail/order_detail.dart';
 
-class OrderDetailController extends GetxController {
-  final int check;
+class EditOrderDetailController extends GetxController {
   final Order order;
 
-  OrderDetailController({
-    this.check, 
+  EditOrderDetailController({
     this.order
   });
 
@@ -206,9 +204,9 @@ class OrderDetailController extends GetxController {
 
 
   Future editCommodity(int indexOriginal, int indexConvert) async {
-     _loading.value = true;
-
+    _loading.value = true;
     OrderDetail orderDetail = _orderDetailList[indexOriginal];
+
     orderDetail.commodityListSelected[indexConvert].stock = _addValue.value;
     
     final updateDetail = await _inputAPI.updateInputDetail(

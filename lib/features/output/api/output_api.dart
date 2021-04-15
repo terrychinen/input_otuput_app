@@ -93,4 +93,37 @@ class OutputAPI {
     }
   }
   
+
+  Future<Map<String, dynamic>> updateStock(int outputID, int storeID, int commodityID, 
+  double quantity, double leftQuantity) async {
+    
+    try {
+      final url = '${ApiConfig.apiUrl}/output/stock/$outputID';
+
+      final response = await http.put(
+          url,
+          body: {            
+            'store_id': storeID.toString(),
+            'commodity_id': commodityID.toString(),
+            'quantity': quantity.toString(),
+            'left_quantity': leftQuantity.toString()
+          }
+      ) .timeout(Duration(seconds: 10));
+
+      final parseResponse = jsonDecode(response.body);
+      final message = parseResponse['message'];
+      if(response.statusCode == 200){
+        return {'ok': true, 'message': message.toString()};
+      }
+      return {'ok': false, 'message': message.toString()};
+    }on PlatformException catch(e) {
+      return {'ok': false, 'message': e.toString()};
+    } on TimeoutException catch(_){
+      return {
+        'ok': false, 
+        'message': 'No se ha establecido la conexión con el servidor'
+      };
+    }
+  }
+
 }

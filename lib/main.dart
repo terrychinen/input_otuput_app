@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:input_store_app/features/auth/pages/auth_page.dart';
 import 'package:input_store_app/features/home/pages/home_page.dart';
+import 'package:input_store_app/features/input/pages/input_order_page.dart';
 import 'package:input_store_app/features/input/pages/input_page.dart';
 import 'package:input_store_app/features/order/pages/order_detail_page.dart';
 import 'package:input_store_app/features/order/pages/order_page.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/create_output': (_) => CreateOutputPage(),
         '/order': (_) => OrderPage(),
         '/order_detail': (_) => OrderDetailPage(),
+        '/input_order': (_) => InputOrderPage()
       },
     );
   }

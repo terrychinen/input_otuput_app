@@ -36,7 +36,9 @@ class InputDetailListWidget extends StatelessWidget {
                 textWidget('Fec. entrada: ', inputDetail.inputDate),
                 SizedBox(height: 5),
                 textWidget('Proveedor: ', inputDetail.providerName),
-                SizedBox(height: 10),
+                 SizedBox(height: 5),
+                textWidget('Almacén: ', inputDetail.storeName),
+                SizedBox(height: 20),
               ]
             ),
             leading: Text(
@@ -50,7 +52,9 @@ class InputDetailListWidget extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold)
               ),
             ),
-            onTap: (){}
+            onTap: () {
+              
+            }
           ),
         );
       },    
@@ -64,13 +68,15 @@ class InputDetailListWidget extends StatelessWidget {
     return Row(
       children: [
          Text(text1),
-         Text(
-          text2,
-          style: TextStyle(
-            color: Colors.black, 
-            fontWeight: FontWeight.bold
-          )
-        )
+         Expanded(
+           child: Text(
+            text2,
+            style: TextStyle(
+              color: Colors.black, 
+              fontWeight: FontWeight.bold
+            )
+        ),
+         )
       ],
     );
   }

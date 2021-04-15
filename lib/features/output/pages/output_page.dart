@@ -44,7 +44,7 @@ class OutputPage extends StatelessWidget {
             ),
 
             Positioned(
-              top: 20,
+              bottom: 20,
               right: 15,
               child: OutputFloatingWidget()
             ),

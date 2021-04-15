@@ -7,18 +7,19 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:input_store_app/features/order/models/order/order.dart';
 import 'package:input_store_app/features/commodity/models/commodity.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:input_store_app/features/order/widgets/modal_sheet_widget.dart';
+import 'package:input_store_app/features/order/widgets/edit_modal_sheet_widget.dart';
 import 'package:input_store_app/features/order/models/order_detail/order_detail.dart';
-import 'package:input_store_app/features/order/controllers/order_detail_controller.dart';
-import 'package:input_store_app/features/order/widgets/subtitle_commodity_list_widget.dart';
+import 'package:input_store_app/features/order/controllers/edit_order_detail_controller.dart';
 import 'package:input_store_app/features/order/controllers/order_detail_error_controller.dart';
+import 'package:input_store_app/features/order/widgets/edit_subtitle_commodity_list_widget.dart';
 
 
-class OrderDetailListWidget extends StatelessWidget {
+
+class EditOrderDetailListWidget extends StatelessWidget {
   @required final Order order;
   @required final int crossAxisCount;
 
-  OrderDetailListWidget({
+  EditOrderDetailListWidget({
     this.order,
     this.crossAxisCount
   });
@@ -27,8 +28,8 @@ class OrderDetailListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final OrderDetailErrorController orderErrorController = Get.find();
 
-    return GetBuilder<OrderDetailController>(
-      init: OrderDetailController(order: this.order),
+    return GetBuilder<EditOrderDetailController>(
+      init: EditOrderDetailController(order: this.order),
       builder: (_) => Obx(() {
         if(_.loading) return Center(child: CircularProgressIndicator());
         return StaggeredGridView.countBuilder(
@@ -63,7 +64,7 @@ class OrderDetailListWidget extends StatelessWidget {
                     )
                   ),
 
-                  subtitle: SubTitleCommodityListWidget(
+                  subtitle: EditSubTitleCommodityListWidget(
                     index: index,
                     commodityList: commodityList,
                   ),
@@ -100,7 +101,7 @@ class OrderDetailListWidget extends StatelessWidget {
                             if(commodityList == null) {
                               showMaterialModalBottomSheet(
                                 context: context,
-                                builder: (context) => ModalSheetWidget(
+                                builder: (context) => EditModalSheetWidget(
                                   index: index,
                                     orderDetail: orderDetail
                                   )
@@ -120,7 +121,7 @@ class OrderDetailListWidget extends StatelessWidget {
                               if(!_.commodityExists) {
                                 showMaterialModalBottomSheet(
                                   context: context,
-                                  builder: (context) => ModalSheetWidget(
+                                  builder: (context) => EditModalSheetWidget(
                                     index: index,
                                     orderDetail: orderDetail
                                   )

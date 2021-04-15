@@ -40,7 +40,36 @@ class InputPage extends StatelessWidget {
 
             Positioned(
               top: 20,
-              right: 15,
+              right: 20,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: <BoxShadow> [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(4, 5),
+                      blurRadius: 15
+                    )
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.exchangeAlt, 
+                    color: Colors.white
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/input_order');
+                  },
+                )
+              ),
+            ),
+
+            Positioned(
+              bottom: 30,
+              right: 25,
               child: Container(
                 width: 50,
                 height: 50,

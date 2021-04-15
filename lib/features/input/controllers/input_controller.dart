@@ -41,24 +41,12 @@ class InputController extends GetxController {
     final DateFormat format = DateFormat('yyyy-MM-dd');
     final DateTime dateFormat = DateTime.parse(format.format(now));
     
-    loadInputDetails(format.format(now));
+    await loadInputDetails(format.format(now));
     
     _datePicked = dateFormat.obs; 
     _loading.value = false;
   }
-
-
-  Future loadInputs(String inputDate) async {
-    final getInputs = await _inputAPI.getInputs(inputDate);
-    if(getInputs['ok']) {
-      if(getInputs['result'].length != 0){
-        _inputList.clear();
-        _inputList.addAll(getInputs['result']);
-      }else {
-        _inputList.clear();
-      }
-    }
-  }
+  
 
   Future loadInputDetails(String inputDate) async {
     final getInputsDetail = await _inputAPI.getInputDetailByDate(inputDate);
