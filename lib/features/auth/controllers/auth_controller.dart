@@ -1,4 +1,5 @@
 import 'package:get/state_manager.dart';
+import 'package:input_store_app/features/auth/models/user.dart';
 import 'package:input_store_app/user_storage.dart';
 import 'package:input_store_app/features/auth/api/auth_api.dart';
 
@@ -35,6 +36,9 @@ class AuthController extends GetxController {
   String get message => _message.value;
   set message(String message) => _message.value = message;
 
+  RxList<String> _usernameList;
+  RxList<String> get usernameList => _usernameList;
+
 
   @override
   void onInit() {      
@@ -49,7 +53,33 @@ class AuthController extends GetxController {
 
     _isError = false.obs;
     _message = ''.obs;
+
+    _usernameList = <String>[].obs;     
   }
+
+  @override
+  void onReady() async {
+    super.onReady();
+    _isLoading.value = true;
+    await loadUsernames(0, 1);
+    _isLoading.value = false;
+  }
+
+  Future loadUsernames(int offset, int state) async {
+    final getUsers = await _authAPI.getUsers(offset, state);
+
+    if(getUsers['ok']) {
+      if(getUsers['result'].length != 0) {
+        _usernameList.clear();
+        List<User> userList = getUsers['result'];
+        for(var i=0; i<userList.length; i++) {
+          _usernameList.add(userList[i].username);          
+        }
+        _username.value = userList[0].username;
+      }
+    }   
+  }
+
 
   Future<Map<String, dynamic>> logIn(String username, String password) async {
     var login = await _authAPI.logIn(username, password);

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:input_store_app/features/home/controllers/home_controller.dart';
 import 'package:input_store_app/features/output/controllers/output_controller.dart';
+import 'package:input_store_app/features/output/pages/create_output_page.dart';
 
 class OutputFloatingWidget extends StatelessWidget {
   @override
@@ -12,8 +13,8 @@ class OutputFloatingWidget extends StatelessWidget {
     OutputController outputController = Get.find();
 
     return Container(
-      width: 50,
-      height: 50,              
+      width: 70,
+      height: 70,              
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(20),
@@ -27,7 +28,7 @@ class OutputFloatingWidget extends StatelessWidget {
       ),
       
       child: IconButton(
-        iconSize: 30,              
+        iconSize: 40,              
         icon: Icon(Icons.qr_code, color: Colors.white),
         onPressed: () async {
           String barcodeScanRes = 
@@ -40,11 +41,12 @@ class OutputFloatingWidget extends StatelessWidget {
 
             int storeID = parseOutput['store_id'];
             int commodityID = parseOutput['commodity_id'];
+            String qrCode = parseOutput['lote'].toString();
 
-            if(storeID != null && commodityID != null) {
+            if(storeID != null && commodityID != null && qrCode != null) {
               await outputController.checkIfStoreAndCommodityExist(storeID, commodityID);
               if(outputController.commodityList.length > 0) {                
-                Navigator.pushNamed(context, '/create_output');
+                Navigator.push(context, MaterialPageRoute(builder: (_) => CreateOutputPage(qrCode)));
               }else {
                 homeController.message = 'La asociasión de la mercancía con almacén no existe';
                 homeController.isError = true;

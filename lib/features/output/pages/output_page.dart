@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -37,14 +39,34 @@ class OutputPage extends StatelessWidget {
               child: Text(
                 'SALIDA', 
                 style: TextStyle(
-                  fontSize: 40, 
+                  fontSize: 20, 
                   fontWeight: FontWeight.w700
                 )
               )
             ),
 
             Positioned(
-              bottom: 20,
+              top: 60,
+              left: 20,
+              child: Text('Registro del día: ${_.outputList.length}', style: TextStyle(fontSize: 17),),
+            ),
+
+            Positioned(
+              top: 100,
+              right: 20,
+              child: TextButton(
+                child: Text('Actualizar'),
+                onPressed: () async {
+                  print('DATE: ${_.datePicked}');
+                  final DateFormat format = DateFormat('yyyy-MM-dd');
+                  final String dateFormat = format.format(_.datePicked);
+                  await _.reloadOutputs(dateFormat, 0, 1);
+                },
+              )
+            ),
+
+            Positioned(
+              top: 20,
               right: 15,
               child: OutputFloatingWidget()
             ),

@@ -51,6 +51,8 @@ class LoginBody extends StatelessWidget {
     final sizeWidth = screenSize.width;
     final sizeHeight = screenSize.height;
 
+    final passwordController = new TextEditingController();
+
     return Scaffold(        
         body: Center(
           child: VisibilityDetector(
@@ -95,18 +97,7 @@ class LoginBody extends StatelessWidget {
                   Container(
                     width: sizeWidth * 0.7,
                     margin: EdgeInsets.symmetric(horizontal: 30),
-                    child: TextField(        
-                      cursorColor: Colors.black,                                   
-                      decoration: InputDecoration(                      
-                        hintText: 'usuario',
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                      ),
-                      onChanged: (query) {
-                        this._.username = query;
-                      },
-                    ),
+                    child: _DropDownUserWidget()
                   ),
 
                   SizedBox(height: 15),
@@ -115,8 +106,10 @@ class LoginBody extends StatelessWidget {
                     width: sizeWidth * 0.7,
                     margin: EdgeInsets.symmetric(horizontal: 30),
                     child: TextField(
+                      controller: passwordController,
                       cursorColor: Colors.black,
                       obscureText: true,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'clave',
                         focusedBorder: UnderlineInputBorder(
@@ -145,6 +138,8 @@ class LoginBody extends StatelessWidget {
 
                         this._.isLoading = false;
                         if(login['ok']) {
+                          _.password = '';
+                          passwordController.text = '';
                           Navigator.pushNamed(context, '/home');
                         }else {
                           this._.isError = true;
@@ -159,5 +154,26 @@ class LoginBody extends StatelessWidget {
         ),
       )
     );
+  }
+}
+
+class _DropDownUserWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    AuthController _ = Get.find();
+
+    return Obx(() => DropdownButton(
+      value: _.username,
+      items: _.usernameList
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value)
+          );
+        }).toList(),
+        onChanged: (String newValue) {
+          _.username = newValue;
+        },
+    ));
   }
 }

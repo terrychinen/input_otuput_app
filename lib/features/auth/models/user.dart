@@ -7,6 +7,8 @@ class User {
   String name;
   String username;
   String password; 
+  int environmentId;
+  String environmentName;
   int state;
 
   User({
@@ -14,6 +16,8 @@ class User {
     this.name,
     this.username,
     this.password,
+    this.environmentId,
+    this.environmentName,
     this.state
   });
 

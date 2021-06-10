@@ -3,6 +3,7 @@ import 'package:input_store_app/features/auth/models/user.dart';
 import 'package:input_store_app/features/auth/api/auth_api.dart';
 import 'package:input_store_app/features/environment/api/environment_api.dart';
 import 'package:input_store_app/features/environment/models/models/environment.dart';
+import 'package:input_store_app/user_storage.dart';
 
 class GetUserController extends GetxController {
   AuthAPI _authAPI;
@@ -26,8 +27,9 @@ class GetUserController extends GetxController {
   set environmentSelected(Environment environment) => 
     _environmentSelected.value = environment;
 
+
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
     _authAPI = new AuthAPI();
     _environmentAPI = new EnvironmentAPI();
@@ -38,23 +40,21 @@ class GetUserController extends GetxController {
     _environmentList = <Environment>[].obs;
     _environmentSelected = new Environment().obs;
 
-    _loading = true.obs;
+    _loading = false.obs;    
+  }
+
+
+  @override
+  void onReady() async {      
+    super.onReady();
+    _loading.value = true;
 
     await loadUsers(0, 1);
     await loadEnvironments(0, 1);
 
     _loading.value = false;
-
-    if(_userList.length > 0) {
-      _userSelected.value = _userList[0];
-    }
-
-    if(_environmentList.length > 0) {
-      _environmentSelected.value = _environmentList[0];
-    }else if(_environmentList.length > 1) {
-      _environmentSelected.value = _environmentList[1];
-    }
   }
+
 
   Future loadUsers(int offset, int state) async {
     final getUsers = await _authAPI.getUsers(offset, state);
@@ -62,10 +62,20 @@ class GetUserController extends GetxController {
     if(getUsers['ok']) {
       if(getUsers['result'].length != 0) {
         _userList.clear();
-        _userList.addAll(getUsers['result']);        
+        _userList.addAll(getUsers['result']);
+
+        _userSelected.value = _userList[0];
+
+        for(int i=0; i<_userList.length; i++) {
+          User user = _userList[i];
+          if(user.userId == UserStorage.user.userId) {
+            _userSelected.value = user;
+          }
+        }      
       }
     }   
   }
+
 
   Future loadEnvironments(int offset, int state) async {
     final getEnvironments = await 
@@ -75,9 +85,37 @@ class GetUserController extends GetxController {
       if(getEnvironments['result'].length != 0) {
         _environmentList.clear();
         _environmentList.addAll(getEnvironments['result']);
+
+        if(_environmentList.length != 0) {
+          _environmentSelected.value = _environmentList[0];      
+        }
+
+        if(_userSelected.value.environmentId != null) {
+          for(int i=0; i<_environmentList.length; i++) {
+            Environment environment = _environmentList[i];
+            if(_userSelected.value.environmentId == environment.environmentID) {
+              _environmentSelected.value = environment;
+            }
+          }
+        }
+
       }
     }
   }
 
+
+  void userChanged(User user) {
+    if(user.environmentId != null) {
+      Environment environment = new Environment();
+      environment.environmentID = user.environmentId;
+      environment.name = user.environmentName;
+
+      for(int i=0; i<_environmentList.length; i++) {
+        if(environment.environmentID == _environmentList[i].environmentID) {
+           _environmentSelected.value = _environmentList[i];
+        }
+      }     
+    }
+  }
 
 }

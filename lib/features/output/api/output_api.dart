@@ -47,7 +47,7 @@ class OutputAPI {
   String parseDate(String dateString) {
     if(dateString != null) {
       DateTime parsedDate = DateTime.parse(dateString);
-      final DateFormat format = DateFormat('dd/MM/yyyy hh:mm a');
+      final DateFormat format = DateFormat('dd/MM/yyyy HH:mm:ss');
       return format.format(parsedDate);
     }
 

@@ -7,7 +7,6 @@ import 'package:input_store_app/features/input/pages/input_order_page.dart';
 import 'package:input_store_app/features/input/pages/input_page.dart';
 import 'package:input_store_app/features/order/pages/order_detail_page.dart';
 import 'package:input_store_app/features/order/pages/order_page.dart';
-import 'package:input_store_app/features/output/pages/create_output_page.dart';
 import 'package:input_store_app/features/output/pages/output_page.dart';
 import 'package:input_store_app/features/commodity/pages/commodity_page.dart';
 
@@ -32,7 +31,6 @@ class MyApp extends StatelessWidget {
         '/input': (_) => InputPage(),
         '/output': (_) => OutputPage(),
         '/commodity': (_) => CommodityPage(),
-        '/create_output': (_) => CreateOutputPage(),
         '/order': (_) => OrderPage(),
         '/order_detail': (_) => OrderDetailPage(),
         '/input_order': (_) => InputOrderPage()

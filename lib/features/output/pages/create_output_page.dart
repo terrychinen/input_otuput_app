@@ -11,23 +11,36 @@ import 'package:input_store_app/features/environment/models/models/environment.d
 import 'package:intl/intl.dart';
 
 class CreateOutputPage extends StatelessWidget {
+  final String qrCode;
+
+  CreateOutputPage(this.qrCode);
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     TextEditingController textController = new TextEditingController();
+    TextEditingController loteTextController = new TextEditingController();
 
     OutputController outputController = Get.find();
     Commodity commodity = outputController.commodityList[0];
 
-    return Scaffold(
+    loteTextController.text = this.qrCode;
+    outputController.note = this.qrCode;   
+
+    return WillPopScope(
+      onWillPop: () async {
+        outputController.changeValue(1.0);
+        return true;
+      },
+      child:  Scaffold(
       body: GetBuilder<GetUserController>(
         init: GetUserController(),
         builder: (_) => Obx(() {
-          if(_.loading) {
+          if(_.loading) {            
             return Center(
               child: CircularProgressIndicator()
             );
-          }
+          }         
 
           return Stack(
             children: [
@@ -40,6 +53,7 @@ class CreateOutputPage extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white), 
                       onPressed: () {
+                        outputController.changeValue(1.0);
                         Navigator.of(context).pop();
                       }
                     ),
@@ -94,20 +108,19 @@ class CreateOutputPage extends StatelessWidget {
                       textWidget('Stock min: ', 
                         commodity.stockMin.toString()),
 
-                      SizedBox(height: 30),
+                      SizedBox(height: 30),                      
 
-                      Container(
-                        child: Row(
-                          children: [
-                            Text(
-                              'Ambiente: ', 
-                              style: TextStyle(fontSize: 16)
-                            ),
-                          ]
-                        )
+                      Row(
+                        children: [
+                          Text(
+                            'Se lo entrega a: ',
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.start
+                          ),
+                          SizedBox(width: 20),
+                         _DropDownUserWidget(),
+                        ],
                       ),
-
-                      _DropDownEnvironmentWidget(),
 
                       SizedBox(height: 20),
                                           
@@ -115,19 +128,7 @@ class CreateOutputPage extends StatelessWidget {
                         margin: EdgeInsets.only(bottom: 20),
                         child: Row(
                           children: [
-                            Text('Lote: ', style: TextStyle(fontSize: 16)),
-                            SizedBox(width: 20),
-                            Container(
-                              width: screenWidth * 0.22,
-                              height: 40,
-                              margin: EdgeInsets.only(bottom: 20),
-                              child: TextField(
-                                keyboardType: TextInputType.number,
-                                onChanged: (query) {
-                                  outputController.note = query;
-                                }
-                              ),
-                            ),
+                            Text('Lote: ${outputController.note}', style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -146,17 +147,19 @@ class CreateOutputPage extends StatelessWidget {
 
                       SizedBox(height: 40),
 
-                      Row(
-                        children: [
-                          Text(
-                            'Se lo entrega a: ',
-                            style: TextStyle(fontSize: 16),
-                            textAlign: TextAlign.start
-                          ),
-                          SizedBox(width: 20),
-                          _DropDownUserWidget(),
-                        ],
+                      Container(
+                        child: Row(
+                          children: [
+                            Text(
+                              'Ambiente: ', 
+                              style: TextStyle(fontSize: 16)
+                            ),
+                          ]
+                        )
                       ),
+
+                      _DropDownEnvironmentWidget(),
+
 
                       SizedBox(height: 30),
                       
@@ -165,14 +168,17 @@ class CreateOutputPage extends StatelessWidget {
                         style: ButtonStyle(backgroundColor: 
                           MaterialStateProperty.all<Color>(Colors.black)),
                         child: Text('Guardar'),
-                        onPressed: () async {                         
-                            await outputController.createOutput(
+                        onPressed: () async {
+                          await outputController.createOutput(
                               commodity.storeId, commodity.commodityId, 
                               outputController.note,
                               outputController.addValue, 
-                              UserStorage.user.userId, 
-                              _.userSelected.userId, 
-                              _.environmentSelected.environmentID);
+                              UserStorage.user.userId,
+                              _.userSelected.userId,
+                              _.environmentSelected.environmentID
+                          );
+
+                          outputController.addValue = 1.0;
                         }
                       )
                     ],
@@ -180,21 +186,20 @@ class CreateOutputPage extends StatelessWidget {
                 ),
               ),
               outputController.createLoading ? 
-                ModalProgressWidget() : 
-                Container(),
+                ModalProgressWidget() : Container(),
               
               outputController.isMessage ? 
-                AlertModalWidget(                                
+                AlertModalWidget(
                   icon: outputController.icon,
                   iconColor: outputController.colorIcon,
                   title: outputController.title,
                   description: outputController.message,
                   descriptionColor: Colors.black,
                   buttonText: 'Aceptar',
-                  colorButton: Colors.black,                  
-                  buttonFunction: () async{
+                  colorButton: Colors.black,
+                  buttonFunction: () async {
                     outputController.title = '';
-                    outputController.message = '';                    
+                    outputController.message = '';
                     outputController.isMessage = false;
                     Navigator.of(context).pop();
                     final DateTime now = new DateTime.now();
@@ -206,7 +211,7 @@ class CreateOutputPage extends StatelessWidget {
             );
           }
         ),
-      )
+      ))
     );
   }
 
@@ -221,7 +226,7 @@ class CreateOutputPage extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [        
+      children: [
         Container(
           width: screenWidth * 0.2,
           child: TextField(
@@ -229,7 +234,7 @@ class CreateOutputPage extends StatelessWidget {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: 'Cant.'
-            ),
+            ),       
             onSubmitted: (query) {
               double newValue = double.parse(query);
               if(newValue > _.commodityList[0].stock) {
@@ -245,7 +250,7 @@ class CreateOutputPage extends StatelessWidget {
 
         SizedBox(width: 30),
 
-         addOrMinusButton('+1', 1, _, textController, Colors.green),
+        addOrMinusButton('+1', 1, _, textController, Colors.green),
 
         SizedBox(width: 10),
 
@@ -314,6 +319,7 @@ class _DropDownUserWidget extends StatelessWidget {
         }).toList(),
         onChanged: (User newValue) {
           _.userSelected = newValue;
+          _.userChanged(_.userSelected);
         },
     ));
   }

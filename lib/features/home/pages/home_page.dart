@@ -16,31 +16,7 @@ class HomePage extends StatelessWidget {
         child: Stack(
           children: [
             Scaffold(
-              bottomNavigationBar: SnakeNavigationBar.color(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25))
-                ),
-                behaviour: SnakeBarBehaviour.pinned,
-                elevation: 50.0,
-                snakeViewColor: Colors.black,
-                unselectedItemColor: Colors.black,
-                currentIndex: _.currentIndex,
-                onTap: (index) {
-                  _.currentIndex = index;            
-                },
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(FontAwesomeIcons.outdent), 
-                    label: 'Salida'
-                  ),
-                  
-                  BottomNavigationBarItem(
-                    icon: Icon(FontAwesomeIcons.truckLoading), 
-                    label: 'Entrada'
-                  ),
-                ],
-              ),
-              body: _HomePageBody()
+              body: OutputPage()
             ),
 
             Container(

@@ -116,6 +116,24 @@ class OutputController extends GetxController {
   }
 
 
+  Future reloadOutputs(String dateOutput, int offset, int state) async {    
+    _loading.value = true;
+    final getOutputs = await 
+      _outputAPI.getOutputs(dateOutput, offset, state);
+
+    if(getOutputs['ok']) {
+      if(getOutputs['result'].length != 0) {
+        _outputList.clear();
+        _outputList.addAll(getOutputs['result']);
+      }else {
+        _outputList.clear();
+      }
+    }
+
+     _loading.value = false;
+  }
+
+
   Future checkIfStoreAndCommodityExist(int storeID, int commodityID) async {
     final checkStoreCommodity = await _commodityAPI
       .checkIfStoreAndCommodityExists(storeID, commodityID);
@@ -141,6 +159,10 @@ class OutputController extends GetxController {
   }
 
 
+  void changeValue(double value) {
+    this._addValue.value = value;
+  }
+
   Future createOutput(int storeID, 
     int commodityID, String note, double quantity, 
     int employeeGives, int employeeReceives, 
@@ -150,7 +172,7 @@ class OutputController extends GetxController {
 
     if(quantity != null || quantity != 0.0) {
       final DateTime now = new DateTime.now();
-      final DateFormat format = DateFormat('yyyy-MM-dd hh:mm:ss');
+      final DateFormat format = DateFormat('yyyy-MM-dd HH:mm:ss');
 
       final create = await _outputAPI.createOutput(storeID, 
         commodityID, note, quantity, employeeGives, 
